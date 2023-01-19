@@ -1019,6 +1019,11 @@ fill-range@^7.0.1:
   dependencies:
     to-regex-range "^5.0.1"
 
+fractional@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/fractional/-/fractional-1.0.0.tgz#dab167a2f9f804cf9038bddf47aa9ba7f207eabc"
+  integrity sha512-4huGcVdAAr0ffcQ7wQY3dhAdZqKd6QgGOP4Kd7ioNoBAS7GdzolwnqgjH/jTzzCpg71oTLbOVwcOWOH+BmwqvA==
+
 fsevents@~2.3.2:
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.2.tgz#8a526f78b8fdf4623b709e0b975c52c24c02fd1a"
