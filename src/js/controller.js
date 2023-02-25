@@ -13,7 +13,7 @@ const controlRecipe = async function () {
     const recipeId = window.location.hash.slice(1);
     if (!recipeId) return;
 
-    recipeView.showSpinner();
+    recipeView.renderSpinner();
 
     // * fetching recipe from API
     await model.loadRecipe(recipeId);
@@ -22,7 +22,7 @@ const controlRecipe = async function () {
     // TODO ron balikan mo 'to
     recipeView.render(model.state.recipe);
   } catch (error) {
-    console.error(error);
+    recipeView.renderError();
   }
 };
 

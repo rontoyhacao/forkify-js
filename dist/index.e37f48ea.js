@@ -545,14 +545,14 @@ const controlRecipe = async function() {
     try {
         const recipeId = window.location.hash.slice(1);
         if (!recipeId) return;
-        (0, _recipeViewJsDefault.default).showSpinner();
+        (0, _recipeViewJsDefault.default).renderSpinner();
         // * fetching recipe from API
         await _modelJs.loadRecipe(recipeId);
         // * rendering the recipe
         // TODO ron balikan mo 'to
         (0, _recipeViewJsDefault.default).render(_modelJs.state.recipe);
     } catch (error) {
-        console.error(error);
+        (0, _recipeViewJsDefault.default).renderError();
     }
 };
 const init = function() {
@@ -1830,7 +1830,7 @@ const loadRecipe = async function(recipeId) {
             ingredients: recipe.ingredients
         };
     } catch (error) {
-        console.error(error);
+        throw error;
     }
 };
 
@@ -1907,6 +1907,7 @@ var _fractional = require("fractional");
 class RecipeView {
     #parentElement = document.querySelector(".recipe");
     #data;
+    #errorMessage = "We couldn't find that recipe. Please try another one!";
     render(data) {
         this.#data = data;
         const markup = this.#generateMarkup();
@@ -1916,13 +1917,25 @@ class RecipeView {
     #clear() {
         this.#parentElement.innerHTML = "";
     }
-    showSpinner() {
+    renderSpinner() {
         const markup = `<div class="spinner">
     <svg>
       <use href="${(0, _iconsSvgDefault.default)}#icon-loader"></use>
     </svg>
   </div>`;
-        this.#parentElement.innerHTML = "";
+        this.#clear();
+        this.#parentElement.insertAdjacentHTML("afterbegin", markup);
+    }
+    renderError(errorMessage = this.#errorMessage) {
+        const markup = `<div class="error">
+    <div>
+      <svg>
+        <use href="${(0, _iconsSvgDefault.default)}#icon-alert-triangle"></use>
+      </svg>
+    </div>
+    <p>${errorMessage}</p>
+  </div>`;
+        this.#clear();
         this.#parentElement.insertAdjacentHTML("afterbegin", markup);
     }
     addHandlerRender(handler) {
