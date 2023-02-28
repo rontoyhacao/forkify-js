@@ -551,7 +551,9 @@ const controlRecipe = async function() {
         const recipeId = window.location.hash.slice(1);
         if (!recipeId) return;
         (0, _recipeViewJsDefault.default).renderSpinner();
-        // * fetching a recipe from API
+        // * update results view to mark selected search result
+        (0, _resultsViewJsDefault.default).update(_modelJs.getSearchResultsPage());
+        // * loading a recipe from API
         await _modelJs.loadRecipe(recipeId);
         // * rendering the recipe
         (0, _recipeViewJsDefault.default).render(_modelJs.state.recipe);
@@ -580,7 +582,8 @@ const controlPagination = function(selectedPage) {
 };
 const controlServings = function(numberOfServings) {
     _modelJs.updateServings(numberOfServings);
-    (0, _recipeViewJsDefault.default).render(_modelJs.state.recipe);
+    // recipeView.render(model.state.recipe);
+    (0, _recipeViewJsDefault.default).update(_modelJs.state.recipe);
 };
 const init = function() {
     (0, _recipeViewJsDefault.default).addHandlerRender(controlRecipe);
@@ -2575,6 +2578,7 @@ class RecipeView extends (0, _viewJs.View) {
         this._parentElement.addEventListener("click", function(e) {
             const servingButton = e.target.closest(".btn--update-servings");
             if (!servingButton) return;
+            // * accessing serving button data-attributes using destructuring: data-update-servings as updateServings
             const { updateServings  } = servingButton.dataset;
             if (+updateServings > 0) handler(+updateServings);
         });
@@ -2681,6 +2685,25 @@ class View {
         const markup = this._generateMarkup();
         this._clear();
         this._parentElement.insertAdjacentHTML("afterbegin", markup);
+    }
+    update(data) {
+        this._data = data;
+        const newMarkup = this._generateMarkup();
+        // * convert newMarkup string to document fragment
+        const newDOM = document.createRange().createContextualFragment(newMarkup);
+        // * convert current and new nodeList markup elements to array
+        const currElements = Array.from(this._parentElement.querySelectorAll("*"));
+        const newElements = Array.from(newDOM.querySelectorAll("*"));
+        // * loop over the newMarkup elements array for comparison to current markup elements array: look for dissimilar elements
+        newElements.forEach((newEl, i)=>{
+            const curEl = currElements[i];
+            // * update element textContent
+            if (!newEl.isEqualNode(curEl) && newEl.firstChild?.nodeValue.trim() !== "") curEl.textContent = newEl.textContent;
+            // * update changed element attributes
+            if (!newEl.isEqualNode(curEl)) Array.from(newEl.attributes).forEach((attribute)=>{
+                curEl.setAttribute(attribute.name, attribute.value);
+            });
+        });
     }
     _clear() {
         this._parentElement.innerHTML = "";
@@ -3038,8 +3061,9 @@ class ResultsView extends (0, _viewJs.View) {
         return this._data.map(this._generateMarkupPreview).join("");
     }
     _generateMarkupPreview(recipe) {
+        const id = window.location.hash.slice(1);
         return `<li class="preview">
-              <a class="preview__link" href="#${recipe.id}">
+              <a class="preview__link ${recipe.id === id ? "preview__link--active" : ""}" href="#${recipe.id}">
                 <figure class="preview__fig">
                   <img src="${recipe.image}" alt="${recipe.title}" />
                 </figure>

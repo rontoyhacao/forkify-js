@@ -15,7 +15,9 @@ class RecipeView extends View {
       const servingButton = e.target.closest('.btn--update-servings');
       if (!servingButton) return;
 
+      // * accessing serving button data-attributes using destructuring: data-update-servings as updateServings
       const { updateServings } = servingButton.dataset;
+
       if (+updateServings > 0) handler(+updateServings);
     });
   }
