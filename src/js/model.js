@@ -47,6 +47,8 @@ export const loadSearchResults = async function (query) {
         image: rec.image_url,
       };
     });
+
+    state.search.page = 1;
   } catch (error) {
     throw error;
   }
