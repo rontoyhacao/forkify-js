@@ -4,12 +4,11 @@ class SearchView {
 
   getQuery() {
     const query = this._searchFieldElement.value;
-    this._clearSearchInput();
+    this._blurSearchInput();
     return query;
   }
 
-  _clearSearchInput() {
-    // this._searchFieldElement.value = '';
+  _blurSearchInput() {
     this._searchFieldElement.blur();
   }
 

@@ -562,6 +562,7 @@ const controlRecipe = async function() {
         (0, _recipeViewJsDefault.default).render(_modelJs.state.recipe);
     } catch (error) {
         (0, _recipeViewJsDefault.default).renderError();
+        console.error(error);
     }
 };
 const controlSearchResults = async function() {
@@ -593,7 +594,11 @@ const controlAddBookmark = function() {
     (0, _recipeViewJsDefault.default).update(_modelJs.state.recipe);
     (0, _bookmarksViewJsDefault.default).render(_modelJs.state.bookmarks);
 };
+const controlBookmarks = function() {
+    (0, _bookmarksViewJsDefault.default).render(_modelJs.state.bookmarks);
+};
 const init = function() {
+    (0, _bookmarksViewJsDefault.default).addHandlerRender(controlBookmarks);
     (0, _recipeViewJsDefault.default).addHandlerRender(controlRecipe);
     (0, _recipeViewJsDefault.default).addHandlerUpdateServings(controlServings);
     (0, _recipeViewJsDefault.default).addHandlerAddBookmark(controlAddBookmark);
@@ -1919,15 +1924,28 @@ const updateServings = function(numberOfServings) {
     });
     state.recipe.servings = numberOfServings;
 };
+const saveBookmarksToLocalStorage = function() {
+    localStorage.setItem("bookmarks", JSON.stringify(state.bookmarks));
+};
 const addBookmark = function(recipe) {
     state.bookmarks.push(recipe);
     if (recipe.id === state.recipe.id) state.recipe.bookmarked = true;
+    saveBookmarksToLocalStorage();
 };
 const removeBookmark = function(recipeId) {
     const index = state.bookmarks.findIndex((recipe)=>recipe.id === recipeId);
     state.bookmarks.splice(index, 1);
     if (recipeId === state.recipe.id) state.recipe.bookmarked = false;
+    saveBookmarksToLocalStorage();
 };
+const init = function() {
+    const storage = localStorage.getItem("bookmarks");
+    if (storage) state.bookmarks = JSON.parse(storage);
+};
+init();
+const clearBookmarks = function() {
+    localStorage.clear("bookmarks");
+}; // clearBookmarks();
 
 },{"regenerator-runtime":"dXNgZ","./config.js":"k5Hzs","./helper.js":"lVRAz","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dXNgZ":[function(require,module,exports) {
 /**
@@ -3061,11 +3079,10 @@ class SearchView {
     _searchFieldElement = this._parentElement.querySelector(".search__field");
     getQuery() {
         const query = this._searchFieldElement.value;
-        this._clearSearchInput();
+        this._blurSearchInput();
         return query;
     }
-    _clearSearchInput() {
-        // this._searchFieldElement.value = '';
+    _blurSearchInput() {
         this._searchFieldElement.blur();
     }
     addHandlerSearch(handler) {
@@ -3179,6 +3196,9 @@ var _previewViewJsDefault = parcelHelpers.interopDefault(_previewViewJs);
 class BookmarksView extends (0, _viewJs.View) {
     _parentElement = document.querySelector(".bookmarks__list");
     _errorMessage = "You have no bookmarks yet.";
+    addHandlerRender(handler) {
+        window.addEventListener("load", handler);
+    }
     _generateMarkup() {
         return this._data.map((bookmarkedRecipe)=>(0, _previewViewJsDefault.default).render(bookmarkedRecipe, false)).join("");
     }
