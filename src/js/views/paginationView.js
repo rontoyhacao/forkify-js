@@ -47,7 +47,7 @@ class PaginationView extends View {
         </button>`;
   }
 
-  addHandlerPagination(handler) {
+  addHandlerClick(handler) {
     this._parentElement.addEventListener('click', function (e) {
       const pageButton = e.target.closest('.btn--inline');
       if (!pageButton) return;
